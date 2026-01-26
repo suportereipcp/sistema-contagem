@@ -18,12 +18,13 @@ def main():
     # Se for dígito, converte para inteiro (índice da câmera)
     if source.isdigit():
         source = int(source)
-        print(f"Tentando abrir câmera índice {source} com backend padrão...")
-        cap = cv2.VideoCapture(source) # Tenta backend padrão (Auto)
+        # Preferência por DirectShow no Windows para evitar erros de MSMF
+        print(f"Tentando abrir câmera índice {source} com DirectShow (DSHOW)...")
+        cap = cv2.VideoCapture(source, cv2.CAP_DSHOW)
         
         if not cap.isOpened():
-             print(f"Falha no padrão. Tentando DirectShow (DSHOW)...")
-             cap = cv2.VideoCapture(source, cv2.CAP_DSHOW)
+             print(f"Falha no DSHOW. Tentando backend padrão...")
+             cap = cv2.VideoCapture(source)
     else:
         print(f"Abrindo arquivo de vídeo: {source}")
         cap = cv2.VideoCapture(source)

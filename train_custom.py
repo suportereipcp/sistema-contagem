@@ -10,7 +10,7 @@ def train():
     # imgsz: Tamanho 640 é padrão para YOLOv8
     print("Iniciando treinamento... Isso pode demorar alguns minutos dependendo do seu PC.")
     results = model.train(
-        data="c:/Users/mateushp/Downloads/sistema-contagem/meu_dataset/data.yaml",
+        data="i:/pcp/sistema-contagem/dataset/data.yaml",
         epochs=50,
         imgsz=640,
         plots=True

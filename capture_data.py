@@ -10,11 +10,11 @@ def main():
 
     # Abre a câmera (usa o índice 0 que sabemos que funciona)
     # Se precisar de outro, mude aqui ou use argparse como no main.py
-    cap = cv2.VideoCapture(0)
+    # Preferência por DSHOW
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     
-    # Se falhar, tenta DSHOW como fallback
     if not cap.isOpened():
-        cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+        cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
         print("Erro: Não foi possível abrir a câmera.")
