@@ -1,6 +1,6 @@
-path: i:/pcp/sistema-contagem/dataset  # dataset root dir
-train: .  # train images (relative to 'path') 
-val: .  # val images (relative to 'path') - usando o mesmo set para validar por simplificação
+path: c:/Projetos/sistema-contagem/dataset # dataset root dir
+train: . # train images (relative to 'path')
+val: . # val images (relative to 'path') - usando o mesmo set para validar por simplificação
 
 names:
   0: peca
