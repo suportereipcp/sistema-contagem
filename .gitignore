@@ -17,7 +17,6 @@ venv.bak/
 .vscode/
 
 # YOLO / ML
-runs/
 # dataset/ # Uncomment if datasets are too large, but keeping for now as they seem small enough for this specific user request context
 # *.pt # Keeping models as they are < 100MB
 # data/
