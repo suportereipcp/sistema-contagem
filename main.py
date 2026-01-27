@@ -1,4 +1,5 @@
 import os
+import numpy as np
 # Correção para erro OMP: Error #15 (conflito de bibliotecas OpenMP)
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
@@ -9,8 +10,8 @@ from ultralytics import YOLO
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", type=str, default="0", help="Caminho do vídeo ou índice da câmera")
-    parser.add_argument("--model", type=str, default="yolov8n.pt", help="Caminho para o arquivo do modelo (.pt)")
-    parser.add_argument("--conf", type=float, default=0.8, help="Limiar de confiança (0.0 a 1.0). Padrão 0.8")
+    parser.add_argument("--model", type=str, default="best_seg.pt", help="Caminho para o arquivo do modelo (.pt)")
+    parser.add_argument("--conf", type=float, default=0.65, help="Limiar de confiança (0.0 a 1.0). Padrão 0.65")
     args = parser.parse_args()
 
     # 1. Inicialização
@@ -47,7 +48,12 @@ def main():
     
     # Armazena IDs que já foram contados para evitar contagem dupla
     counted_ids = set()
-    counter = 0
+    # Dicionário de contadores por classe
+    counters = {} 
+    
+    # Mapeamento de nomes de classes do modelo
+    class_names = model.names
+    print(f"Classes detectáveis: {class_names}")
 
     print("Sistema iniciado. Pressione 'q' para sair.")
 
@@ -77,20 +83,34 @@ def main():
             class_ids = results[0].boxes.cls.cpu().numpy().astype(int)
             confs = results[0].boxes.conf.cpu().numpy() # Pega as confianças
 
-            for box, track_id, cls_id, conf in zip(boxes, track_ids, class_ids, confs):
+            for idx, (box, track_id, cls_id, conf) in enumerate(zip(boxes, track_ids, class_ids, confs)):
                 x1, y1, x2, y2 = box
                 
                 # Calcula o centro do bounding box
                 cx = int((x1 + x2) / 2)
                 cy = int((y1 + y2) / 2)
 
-                # Desenha o bounding box e o centro
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
+                # 3. Detecção e Rastreamento (Segmentação)
+                label = f"Peca #{track_id} ({int(conf*100)}%)"
+
+                # Se o modelo for de segmentação, teremos máscaras/polígonos
+                if results[0].masks is not None:
+                    # Pega os pontos do polígono para este objeto
+                    # results[0].masks.xy contém uma lista de arrays numpy (x, y)
+                    points = results[0].masks.xy[idx].astype(np.int32)
+                    # Desenha o contorno (polilinha fechada)
+                    cv2.polylines(frame, [points], True, (255, 0, 0), 2)
+                    # Opcional: preencher levemente o interior da peça
+                    overlay = frame.copy()
+                    cv2.fillPoly(overlay, [points], (255, 0, 0))
+                    cv2.addWeighted(overlay, 0.2, frame, 0.8, 0, frame)
+                else:
+                    # Fallback para caixa se não houver máscara
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
+                
                 cv2.circle(frame, (cx, cy), 4, (0, 0, 255), -1)
                 
                 # Texto com ID e Confiança
-                # IMPORTANTE: track_id é o número sequencial do RASTREAMENTO, não o tipo da peça.
-                label = f"Peca #{track_id} ({int(conf*100)}%)"
                 cv2.putText(frame, label, (x1, y1 - 10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
 
@@ -104,14 +124,21 @@ def main():
                 if (line_y_pos - offset) < cy < (line_y_pos + offset):
                     if track_id not in counted_ids:
                         counted_ids.add(track_id)
-                        counter += 1
+                        
+                        # Incrementa o contador da classe específica
+                        class_name = class_names[cls_id]
+                        counters[class_name] = counters.get(class_name, 0) + 1
+                        
                         # Efeito visual de contagem (linha muda de cor momentaneamente)
                         cv2.line(frame, (0, line_y_pos), (width, line_y_pos), (0, 0, 255), 4)
-                        print(f"Peça contada! Total: {counter}")
+                        print(f"Contado: {class_name} | Total da classe: {counters[class_name]}")
 
         # 5. Interface na Tela (HUD)
-        cv2.putText(frame, f"Contagem: {counter}", (20, 50), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3)
+        y_offset = 50
+        for class_name, count in counters.items():
+            cv2.putText(frame, f"{class_name}: {count}", (20, y_offset), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 255), 3)
+            y_offset += 50 # Pula linha para a próxima classe
 
         # Redimensionando a janela de visualização (Zoom no display)
         # O usuário pediu 50% maior. Vamos usar um fator de escala.
@@ -124,11 +151,11 @@ def main():
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             break
-        # Tecla 'r' para resetar contagem
-        elif key == ord('r'):
-            counter = 0
+        # Tecla 'r' ou 'R' para resetar contagem
+        elif key == ord('r') or key == ord('R'):
+            counters.clear()
             counted_ids.clear()
-            print("Contagem resetada!")
+            print(">> CONTADORES RESETADOS!")
 
     cap.release()
     cv2.destroyAllWindows()

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision System | Command Center</title>
+    <link rel="stylesheet" href="static/style.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>VISION SYSTEM</h1>
+            <p>Advanced Counting & Recognition Command Center</p>
+        </header>
+
+        <div class="grid">
+            <!-- Card 1: Main System -->
+            <div class="card">
+                <h2><span class="card-icon">👁️</span> Monitoramento</h2>
+                <p class="description">
+                    Inicie o sistema principal de contagem e rastreamento de peças.
+                </p>
+                <div class="controls">
+
+                    <div class="control-group">
+                        <label for="conf">Confiança Mínima: <span id="confVal">65</span>%</label>
+                        <input type="range" id="conf" min="10" max="100" value="65"
+                            oninput="document.getElementById('confVal').innerText = this.value">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="camera">ID da Câmera / Vídeo:</label>
+                        <input type="text" id="camera" value="0" placeholder="Ex: 0 ou video.mp4">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="model">Modelo:</label>
+                        <input type="text" id="model" value="best_seg.pt">
+                    </div>
+
+                </div>
+                <button onclick="startSystem()" class="btn btn-primary">INICIAR SISTEMA</button>
+                <div id="status-system" class="status">Offline</div>
+            </div>
+
+            <!-- Card 2: Capture Data -->
+            <div class="card">
+                <h2><span class="card-icon">📸</span> Captura de Dados</h2>
+                <p class="description">
+                    Abra o coletor de imagens para criar novos datasets da linha de produção.
+                </p>
+                <div class="controls">
+                    <p style="font-size: 0.9rem; color: #94a3b8;">Use [ESPAÇO] para capturar e [Q] para sair.</p>
+                </div>
+                <!-- Spacer to align buttons -->
+                <div style="flex-grow: 1;"></div>
+                <button onclick="startCapture()" class="btn btn-success">ABRIR COLETOR</button>
+                <div id="status-capture" class="status">Offline</div>
+            </div>
+
+            <!-- Card 3: Training & AI -->
+            <div class="card">
+                <h2><span class="card-icon">🧠</span> Treinamento AI</h2>
+                <p class="description">
+                    Ferramentas para rotulagem automática e treinamento de novos modelos.
+                </p>
+
+                <div class="controls" style="gap: 1rem;">
+                    <button onclick="startManualLabel()" class="btn btn-warning"
+                        style="font-size: 0.9rem; background: linear-gradient(135deg, #d97706, #b45309);">1. MANUAL
+                        LABELING (Labelme)</button>
+                    <button onclick="startTrain()" class="btn btn-warning" style="font-size: 0.9rem;">2. TREINAR NOVO
+                        MODELO</button>
+                </div>
+                <div id="status-train" class="status">Offline</div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Powered by Antigravity AI & YOLOv8</p>
+        </footer>
+
+    </div>
+
+    <script src="static/script.js"></script>
+</body>
+
+</html>

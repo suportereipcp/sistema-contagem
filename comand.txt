@@ -1,0 +1,5 @@
+& C:\Users\emiliojv\AppData\Local\anaconda3\python.exe main.py --model best_seg.pt --conf 0.8
+
+
+
+uvicorn app:app --port 8000 --reload
