@@ -1,16 +1,16 @@
 from ultralytics import YOLO
 
 def train():
-    # Carrega o modelo base (Nano)
-    model = YOLO("yolov8n.pt") 
+    # Carrega o modelo de SEGMENTAÇÃO (Nano Seg)
+    model = YOLO("yolov8n-seg.pt") 
 
     # Inicia o treinamento
     # data: Caminho para o arquivo data.yaml configurado
-    # epochs: 50 épocas é um bom começo para testes rápidos (pode aumentar para 100 depois)
+    # epochs: 50 épocas é um bom começo
     # imgsz: Tamanho 640 é padrão para YOLOv8
-    print("Iniciando treinamento... Isso pode demorar alguns minutos dependendo do seu PC.")
+    print("Iniciando treinamento de SEGMENTAÇÃO...")
     results = model.train(
-        data="i:/pcp/sistema-contagem/dataset/data.yaml",
+        data="dataset/data.yaml",
         epochs=50,
         imgsz=640,
         plots=True

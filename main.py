@@ -1,3 +1,7 @@
+import os
+# Correção para erro OMP: Error #15 (conflito de bibliotecas OpenMP)
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 import cv2
 import argparse
 from ultralytics import YOLO
@@ -85,7 +89,8 @@ def main():
                 cv2.circle(frame, (cx, cy), 4, (0, 0, 255), -1)
                 
                 # Texto com ID e Confiança
-                label = f"ID: {track_id} ({int(conf*100)}%)"
+                # IMPORTANTE: track_id é o número sequencial do RASTREAMENTO, não o tipo da peça.
+                label = f"Peca #{track_id} ({int(conf*100)}%)"
                 cv2.putText(frame, label, (x1, y1 - 10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
 
@@ -108,7 +113,12 @@ def main():
         cv2.putText(frame, f"Contagem: {counter}", (20, 50), 
                     cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3)
 
-        cv2.imshow("VisionCount Foundry - Monitoramento", frame)
+        # Redimensionando a janela de visualização (Zoom no display)
+        # O usuário pediu 50% maior. Vamos usar um fator de escala.
+        display_scale = 1.5
+        display_frame = cv2.resize(frame, None, fx=display_scale, fy=display_scale)
+
+        cv2.imshow("VisionCount Foundry - Monitoramento", display_frame)
 
         # Tecla 'q' para sair
         key = cv2.waitKey(1) & 0xFF
