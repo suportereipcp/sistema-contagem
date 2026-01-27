@@ -6,11 +6,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", type=str, default="0", help="Caminho do vídeo ou índice da câmera")
     parser.add_argument("--model", type=str, default="yolov8n.pt", help="Caminho para o arquivo do modelo (.pt)")
+    parser.add_argument("--conf", type=float, default=0.8, help="Limiar de confiança (0.0 a 1.0). Padrão 0.8")
     args = parser.parse_args()
 
     # 1. Inicialização
     # Carrega o modelo (padrão ou customizado)
-    print(f"Carregando modelo: {args.model} ...")
+    print(f"Carregando modelo: {args.model} com confiança mínima de {args.conf*100}% ...")
     model = YOLO(args.model)
 
     source = args.source
@@ -59,8 +60,8 @@ def main():
             
         # 3. Detecção e Rastreamento
         # persist=True é essencial para tracking manter o ID entre frames
-        # conf=0.6: Só conta se tiver 60% de certeza (evita falsos positivos)
-        results = model.track(source=frame, persist=True, conf=0.6, verbose=False)
+        # conf=args.conf: Só conta se tiver X% de certeza (ex: 0.8)
+        results = model.track(source=frame, persist=True, conf=args.conf, verbose=False)
         
         # Desenha a linha de referência
         cv2.line(frame, (0, line_y_pos), (width, line_y_pos), (0, 255, 0), 2)
@@ -70,8 +71,9 @@ def main():
             boxes = results[0].boxes.xyxy.cpu().numpy().astype(int)
             track_ids = results[0].boxes.id.cpu().numpy().astype(int)
             class_ids = results[0].boxes.cls.cpu().numpy().astype(int)
+            confs = results[0].boxes.conf.cpu().numpy() # Pega as confianças
 
-            for box, track_id, cls_id in zip(boxes, track_ids, class_ids):
+            for box, track_id, cls_id, conf in zip(boxes, track_ids, class_ids, confs):
                 x1, y1, x2, y2 = box
                 
                 # Calcula o centro do bounding box
@@ -81,7 +83,10 @@ def main():
                 # Desenha o bounding box e o centro
                 cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
                 cv2.circle(frame, (cx, cy), 4, (0, 0, 255), -1)
-                cv2.putText(frame, f"ID: {track_id}", (x1, y1 - 10), 
+                
+                # Texto com ID e Confiança
+                label = f"ID: {track_id} ({int(conf*100)}%)"
+                cv2.putText(frame, label, (x1, y1 - 10), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
 
                 # 4. Lógica de Contagem
