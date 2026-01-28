@@ -1,9 +1,3 @@
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-
 # Environments
 .env
 .venv
@@ -15,11 +9,6 @@ venv.bak/
 
 # VS Code
 .vscode/
-
-# YOLO / ML
-# dataset/ # Uncomment if datasets are too large, but keeping for now as they seem small enough for this specific user request context
-# *.pt # Keeping models as they are < 100MB
-# data/
 
 # OS
 .DS_Store

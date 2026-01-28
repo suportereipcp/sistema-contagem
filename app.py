@@ -67,7 +67,7 @@ def start_manual_label():
         # Launch labelme pointing to the dataset directory
         # labelme [image_dir]
         dataset_dir = os.path.join(os.getcwd(), "dataset")
-        cmd = ["labelme", dataset_dir]
+        cmd = [sys.executable, "-m", "labelme", dataset_dir]
         
         proc = subprocess.Popen(cmd, cwd=os.getcwd())
         return {"status": "success", "message": "Labelme started"}

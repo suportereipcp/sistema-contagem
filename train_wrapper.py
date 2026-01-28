@@ -12,8 +12,28 @@ def main():
     try:
         convert_labelme_json_to_yolo(dataset_dir, dataset_dir)
         print("Conversao concluida com sucesso.")
+        
+        # 1.5 Generate data.yaml
+        yaml_path = os.path.join(dataset_dir, "data.yaml")
+        print(f"Gerando {yaml_path}...")
+        
+        # Absolute path to dataset to avoid confusion
+        abs_dataset_dir = os.path.abspath(dataset_dir)
+        
+        # Simple YAML content for flat directory structure (images and labels in same folder)
+        # Note: 'train' and 'val' point to the same folder for this simple usage
+        yaml_content = f"""
+path: {abs_dataset_dir}
+train: .
+val: .
+names:
+  0: peca
+"""
+        with open(yaml_path, "w") as f:
+            f.write(yaml_content.strip())
+            
     except Exception as e:
-        print(f"ERRO CRITICO na conversao: {e}")
+        print(f"ERRO CRITICO na preparacao: {e}")
         input("Pressione Enter para sair...")
         sys.exit(1)
 

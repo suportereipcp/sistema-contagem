@@ -44,7 +44,12 @@
                     </div>
 
                 </div>
-                <button onclick="startSystem()" class="btn btn-primary">INICIAR SISTEMA</button>
+                <div style="display: flex; gap: 10px;">
+                    <button id="btn-start-system" onclick="startSystem()" class="btn btn-primary">INICIAR
+                        SISTEMA</button>
+                    <button id="btn-stop-system" onclick="stopSystem()" class="btn btn-danger"
+                        style="display: none;">PARAR SISTEMA</button>
+                </div>
                 <div id="status-system" class="status">Offline</div>
             </div>
 
