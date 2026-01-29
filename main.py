@@ -26,8 +26,58 @@ def main():
     parser.add_argument("--conf", type=float, default=0.65, help="Confiança mínima")
     args = parser.parse_args()
 
-    print(f"Carregando modelo: {args.model} com confiança {args.conf*100}% ...")
-    model = YOLO(args.model)
+    print(f"Carregando modelo solicitado: {args.model}") 
+    
+    # --- AUTO-DEVICE & MODEL SELECTION ---
+    import torch
+    
+    def get_best_hardware_config(model_base_name):
+        """
+        Detecta hardware e seleciona o melhor formato de modelo.
+        Retorna: (model_path, device, adaptive_resize_bool)
+        """
+        # 1. Prioridade: GPU NVIDIA
+        if torch.cuda.is_available():
+            device_name = torch.cuda.get_device_name(0)
+            print(f"✅ GPU NVIDIA Detectada: {device_name} (Forçando CUDA:0)")
+            
+            # Tenta carregar TensorRT (.engine)
+            engine_path = model_base_name.replace(".pt", ".engine")
+            if os.path.exists(engine_path):
+                print(f"⚡ Usando Motor TensorRT para velocidade máxima: {engine_path}")
+                return engine_path, "0", False
+            
+            # Se não tiver engine, usa .pt na GPU
+            print(f"⚠️ TensorRT não encontrado. Usando PyTorch (.pt) na GPU.")
+            return model_base_name, "0", False
+            
+        else:
+            # 2. Fallback: CPU
+            print("⚠️ GPU não detectada. Ativando modo de compatibilidade CPU.")
+            
+            # Tenta carregar ONNX (Universal)
+            onnx_path = model_base_name.replace(".pt", ".onnx")
+            if os.path.exists(onnx_path):
+                print(f"🛡️ Usando ONNX Runtime para otimização em CPU: {onnx_path}")
+                return onnx_path, "cpu", True
+            
+            print(f"⚠️ ONNX não encontrado. Usando PyTorch (.pt) em CPU (Pode ser lento).")
+            return model_base_name, "cpu", True
+
+    best_model_path, device, adaptive_mode = get_best_hardware_config(args.model)
+    
+    # Carrega o modelo com o device correto
+    try:
+        model = YOLO(best_model_path) # YOLO carrega .pt, .onnx, .engine automaticamente
+    except Exception as e:
+        print(f"Erro ao carregar {best_model_path}: {e}")
+        print("Tentando fallback para original...")
+        model = YOLO(args.model)
+        device = "cpu"
+        adaptive_mode = True
+
+    model.to(device) if device != "cpu" and not best_model_path.endswith(".onnx") else None # ONNX runs on its own runtime usually
+    print(f"🚀 Sistema rodando em: {device.upper()} | Resize Adaptativo: {'ATIVO' if adaptive_mode else 'OFF'}")
 
     source = args.source
     if source.isdigit():
@@ -91,7 +141,13 @@ def main():
         yaml_path = "custom_tracker.yaml"
         if not os.path.exists(yaml_path): yaml_path = "botsort.yaml"
 
-        results = model.track(source=frame, persist=True, conf=args.conf, tracker=yaml_path, verbose=False)
+        if adaptive_mode:
+            # Em CPU, reduzimos a resolução de inferência para manter o FPS
+            # 320px é suficiente para contagem e muito mais rápido
+            results = model.track(source=frame, persist=True, conf=args.conf, tracker=yaml_path, verbose=False, imgsz=320)
+        else:
+            # Em GPU, usamos 640 ou tamanho nativo (padrão)
+            results = model.track(source=frame, persist=True, conf=args.conf, tracker=yaml_path, verbose=False)
         
         # --- HUD ---
         overlay_hud = frame.copy()
