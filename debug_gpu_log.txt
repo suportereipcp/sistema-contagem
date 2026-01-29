@@ -1,0 +1,3 @@
+EXE: i:\pcp\sistema-contagem\venv\Scripts\python.exe
+TORCH: 2.10.0+cpu (i:\pcp\sistema-contagem\venv\Lib\site-packages\torch\__init__.py)
+CUDA: False

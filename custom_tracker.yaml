@@ -1,0 +1,14 @@
+tracker_type: botsort # tracker type, ['botsort', 'bytetrack']
+track_high_thresh: 0.3 # Baixado para manter track mesmo com confiança menor
+track_low_thresh: 0.1 # threshold for the second association
+new_track_thresh: 0.7 # Aumentado: exige ALTA confiança para criar NOVO id (evita fantasma)
+track_buffer: 120 # Dobrado: lembra por 4 segundos (30fps)
+match_thresh: 0.9 # Aumentado: prefere associar ao anterior do que criar novo
+# min_box_area: 10  # threshold for min box areas(filters out small boxes)
+gmc_method: sparseOptFlow # method of global motion compensation
+# ReID model related configs (BoT-SORT only)
+proximity_thresh: 0.5
+appearance_thresh: 0.25
+with_reid: False
+# model: osnet_x0_25_msmt17.pt
+fuse_score: True # Fuse scoring, required by BoT-SORT
