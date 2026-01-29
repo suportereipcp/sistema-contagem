@@ -16,23 +16,23 @@ Este projeto é uma solução completa (End-to-End) que integra captura de dados
 
 ### ✨ Principais Funcionalidades
 
-* **🔍 Monitoramento em Tempo Real:** Detecção e contagem de peças com alta precisão utilizando Segmentação de Instância (YOLOv8-seg).
-* **�️ Interface de Controle Web:** Dashboard moderno para iniciar/parar o sistema, ajustar confiança e gerenciar processos.
-* **🏷️ Rotulagem Profissional:** Integração nativa com **Labelme** para anotação precisa de polígonos.
-* **🤖 Ciclo de Treinamento Automatizado:** Pipeline inteligente que converte anotações JSON automaticamente para o formato YOLO e inicia o retreino do modelo com um único clique.
+- **🔍 Monitoramento em Tempo Real:** Detecção e contagem de peças com alta precisão utilizando Segmentação de Instância (YOLOv8-seg).
+- **�️ Interface de Controle Web:** Dashboard moderno para iniciar/parar o sistema, ajustar confiança e gerenciar processos.
+- **🏷️ Rotulagem Profissional:** Integração nativa com **Labelme** para anotação precisa de polígonos.
+- **🤖 Ciclo de Treinamento Automatizado:** Pipeline inteligente que converte anotações JSON automaticamente para o formato YOLO e inicia o retreino do modelo com um único clique.
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
-| Componente | Tecnologia | Descrição |
-| :--- | :--- | :--- |
-| **Backend** | [FastAPI](https://fastapi.tiangolo.com/) | API de alta performance para orquestração de processos. |
-| **Servidor** | [Uvicorn](https://www.uvicorn.org/) | Servidor ASGI leve e rápido. |
-| **IA Core** | [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) | Estado da arte em modelos de segmentação. |
-| **Visão** | [OpenCV](https://opencv.org/) | Processamento de imagem e renderização em tempo real. |
-| **Frontend** | HTML5 / CSS3 / JS | Interface do usuário responsiva e dinâmica. |
-| **Data** | Labelme / NumPy | Ferramentas de anotação e manipulação numérica. |
+| Componente   | Tecnologia                                                       | Descrição                                               |
+| :----------- | :--------------------------------------------------------------- | :------------------------------------------------------ |
+| **Backend**  | [FastAPI](https://fastapi.tiangolo.com/)                         | API de alta performance para orquestração de processos. |
+| **Servidor** | [Uvicorn](https://www.uvicorn.org/)                              | Servidor ASGI leve e rápido.                            |
+| **IA Core**  | [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) | Estado da arte em modelos de segmentação.               |
+| **Visão**    | [OpenCV](https://opencv.org/)                                    | Processamento de imagem e renderização em tempo real.   |
+| **Frontend** | HTML5 / CSS3 / JS                                                | Interface do usuário responsiva e dinâmica.             |
+| **Data**     | Labelme / NumPy                                                  | Ferramentas de anotação e manipulação numérica.         |
 
 ---
 
@@ -40,29 +40,29 @@ Este projeto é uma solução completa (End-to-End) que integra captura de dados
 
 ### Pré-requisitos
 
-* Python 3.10 ou superior.
-* Webcam ou fonte de vídeo.
-* NVIDIA GPU (Opcional, mas recomendado para treinamento rápido).
+- Python 3.10 ou superior.
+- Webcam ou fonte de vídeo.
+- NVIDIA GPU (Opcional, mas recomendado para treinamento rápido).
 
 ### Passos para Instalação
 
 1. **Clonar o Repositório:**
 
-    ```powershell
-    git clone https://github.com/suportereipcp/sistema-contagem.git
-    cd sistema-contagem
-    ```
+   ```powershell
+   git clone https://github.com/suportereipcp/sistema-contagem.git
+   cd sistema-contagem
+   ```
 
 2. **Configurar Variáveis de Ambiente (Opcional):**
-    Crie um arquivo `.env` se necessário. Por padrão, o sistema usa configurações locais.
+   Crie um arquivo `.env` se necessário. Por padrão, o sistema usa configurações locais.
 
 3. **Ambiente Virtual e Dependências:**
 
-    ```powershell
-    python -m venv venv
-    .\venv\Scripts\Activate.ps1
-    pip install -r requirements.txt
-    ```
+   ```powershell
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
+   pip install -r requirements.txt
+   ```
 
 ---
 
@@ -70,9 +70,9 @@ Este projeto é uma solução completa (End-to-End) que integra captura de dados
 
 Para iniciar o **Painel de Controle**, execute o seguinte comando no terminal:
 
-```powershell
-python -m uvicorn app:app --port 8000 --reload
-```
+````powershell
+    .\venv\Scripts\python.exe -m uvicorn app:app --port 8000 --reload
+    ```
 
 Acesse: [http://localhost:8000](http://localhost:8000)
 
@@ -103,19 +103,21 @@ O sistema possui um fluxo simplificado para adicionar novas peças à IA:
 
 ## 📂 Estrutura do Projeto
 
-```
+````
+
 sistema-contagem/
-├── app.py                # Backend da API FastAPI
-├── main.py               # Core de detecção e inferência (YOLO)
-├── capture_data.py       # Script de coleta de imagens
-├── auto_label.py         # Script legado de auto-rotulagem
-├── train_wrapper.py      # Orquestrador de treinamento e conversão de dados
-├── json2yolo.py          # Utilitário de conversão Labelme JSON -> YOLO
-├── dataset/              # Diretório de armazenamento de imagens e labels
-│   ├── data.yaml         # Configuração gerada automaticamente
-│   └── *.json/*.jpg      # Dados brutos
-├── static/               # Assets do Frontend (HTML/CSS/JS)
-└── requirements.txt      # Dependências do projeto
+├── app.py # Backend da API FastAPI
+├── main.py # Core de detecção e inferência (YOLO)
+├── capture_data.py # Script de coleta de imagens
+├── auto_label.py # Script legado de auto-rotulagem
+├── train_wrapper.py # Orquestrador de treinamento e conversão de dados
+├── json2yolo.py # Utilitário de conversão Labelme JSON -> YOLO
+├── dataset/ # Diretório de armazenamento de imagens e labels
+│ ├── data.yaml # Configuração gerada automaticamente
+│ └── _.json/_.jpg # Dados brutos
+├── static/ # Assets do Frontend (HTML/CSS/JS)
+└── requirements.txt # Dependências do projeto
+
 ```
 
 ---
@@ -129,3 +131,4 @@ Contribuições são bem-vindas! Siga as boas práticas de Pull Requests e Conve
 3. Commit suas mudanças (`git commit -m 'Feat: Adiciona Nova Feature'`).
 4. Push para a Branch (`git push origin feature/NovaFeature`).
 5. Abra um Pull Request.
+```

@@ -45,11 +45,22 @@ def convert_labelme_json_to_yolo(json_dir, output_dir, class_map=None):
             
             with open(txt_path, "w") as out_f:
                 for shape in data["shapes"]:
-                    label = shape["label"]
+                    label = shape["label"].lower() # Força minusculo para evitar erros de Case
+                    
+                    # Normaliza o mapa de classes também se necessário, mas aqui vamos assumir que o map usa chaves minusculas
                     if label not in class_map:
-                        print(f"Aviso: Label '{label}' nao encontrado no mapa de classes. Ignorando.")
-                        # Auto-add? No, risky. 
-                        continue
+                        # Tenta verificar se existe alguma chave compatível ignorando case
+                        found_key = None
+                        for key in class_map:
+                            if key.lower() == label:
+                                found_key = key
+                                break
+                        
+                        if found_key:
+                            label = found_key
+                        else:
+                            print(f"Aviso: Label '{label}' (orig: {shape['label']}) nao encontrado no mapa de classes {class_map}. Ignorando.")
+                            continue
                     
                     class_id = class_map[label]
                     points = shape["points"]

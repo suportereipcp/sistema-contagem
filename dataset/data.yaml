@@ -1,0 +1,5 @@
+path: C:\sistema-contagem\dataset
+train: .
+val: .
+names:
+  0: peca

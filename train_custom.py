@@ -13,7 +13,10 @@ def train():
         data="dataset/data.yaml",
         epochs=50,
         imgsz=640,
-        plots=True
+        plots=True,
+        batch=4,      # REDUÇÃO: Evitar CUDA OOM em GPU 4GB
+        workers=2,    # REDUÇÃO: Menos threads para economizar RAM
+        device=0      # Garante uso da GPU
     )
     print("Treinamento finalizado!")
     print(f"O modelo final foi salvo em: {results.save_dir}")
