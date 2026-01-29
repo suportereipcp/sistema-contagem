@@ -4,3 +4,5 @@
 
 uvicorn app:app --port 8000 --reload
 python -m uvicorn app:app --port 8000 --reload
+
+.\venv\Scripts\python.exe -m uvicorn app:app --port 8000 --reload
