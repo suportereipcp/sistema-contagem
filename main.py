@@ -45,11 +45,11 @@ def main():
             engine_path = model_base_name.replace(".pt", ".engine")
             if os.path.exists(engine_path):
                 print(f"⚡ Usando Motor TensorRT para velocidade máxima: {engine_path}")
-                return engine_path, "0", False
+                return engine_path, "cuda:0", False
             
             # Se não tiver engine, usa .pt na GPU
-            print(f"⚠️ TensorRT não encontrado. Usando PyTorch (.pt) na GPU.")
-            return model_base_name, "0", False
+            print(f"⚠️ Arquivo TensorRT (.engine) não encontrado. Usando PyTorch (.pt) na GPU.")
+            return model_base_name, "cuda:0", False
             
         else:
             # 2. Fallback: CPU
