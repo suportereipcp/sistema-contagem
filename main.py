@@ -71,9 +71,16 @@ def main():
     print("Sistema iniciado. Pressione 'q' para sair.")
     print("Modo de Bloqueio de Classe: ATIVO (IA define a classe na entrada e não muda mais)")
 
+    prev_frame_time = 0
+
     while True:
         ret, frame = cap.read()
         if not ret: break
+
+        # Calculo de FPS
+        curr_frame_time = time.time()
+        fps = 1 / (curr_frame_time - prev_frame_time) if prev_frame_time > 0 else 0
+        prev_frame_time = curr_frame_time
 
         height, width, _ = frame.shape
         
@@ -88,7 +95,7 @@ def main():
         
         # --- HUD ---
         overlay_hud = frame.copy()
-        cv2.rectangle(overlay_hud, (0, 0), (width, 80), COLOR_HUD_BG, -1)
+        cv2.rectangle(overlay_hud, (0, 0), (width, 100), COLOR_HUD_BG, -1)
         cv2.addWeighted(overlay_hud, 0.85, frame, 0.15, 0, frame)
         
         cv2.line(frame, (0, line_pos_A), (width, line_pos_A), COLOR_LINE_A, 2, cv2.LINE_AA)
@@ -103,6 +110,10 @@ def main():
         minutes, seconds = divmod(rem, 60)
         cv2.putText(frame, f"{hours:02}:{minutes:02}:{seconds:02}", (width - 160, 55), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (200, 200, 200), 2, cv2.LINE_AA)
         cv2.putText(frame, "TEMPO ATIVO", (width - 160, 25), cv2.FONT_HERSHEY_PLAIN, 1.0, (150, 150, 150), 1, cv2.LINE_AA)
+
+        # FPS (Bottom Right, Simple Font, Green)
+        cv2.putText(frame, f"FPS: {int(fps)}", (width - 120, height - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+
 
         # Processamento
         if results and results[0].boxes.id is not None:
